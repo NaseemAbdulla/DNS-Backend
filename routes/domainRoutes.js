@@ -6,7 +6,7 @@ const domainController = require('../controllers/domainController');
 router.get('/', domainController.getAllDomains);
 router.get('/:domainId/records', domainController.getRecordsByDomainId);
 router.post('/', domainController.createDomain);
-router.put('/:id', domainController.updateDomain);
+
 router.delete('/:id', domainController.deleteDomain);
 
 router.post('/:domainId/records', domainController.createRecord);

@@ -12,9 +12,9 @@ exports.getAllDomains = async (req, res) => {
 };
 
 // Get a single domain
-exports.getDomainById = async (req, res) => {
+exports.getRecordsByDomainId = async (req, res) => {
   try {
-    const domain = await Domain.findById(req.params.id);
+    const domain = await Domain.findById(req.params.domainId);
     if (!domain) {
       return res.status(404).json({ message: 'Domain not found' });
     }
@@ -27,6 +27,12 @@ exports.getDomainById = async (req, res) => {
 // Create a new domain
 exports.createDomain = async (req, res) => {
   const domain = new Domain(req.body);
+  const newDomain= {
+    domain: req.body.domain,
+    id: req.body.id,
+    records: [],
+    created_at: req.body.created_at
+  };
   try {
     const newDomain = await domain.save();
     res.status(201).json(newDomain);
@@ -36,17 +42,7 @@ exports.createDomain = async (req, res) => {
 };
 
 // Update a domain
-exports.updateDomain = async (req, res) => {
-  try {
-    const domain = await Domain.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!domain) {
-      return res.status(404).json({ message: 'Domain not found' });
-    }
-    res.json(domain);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-};
+
 
 // Delete a domain
 exports.deleteDomain = async (req, res) => {
@@ -74,8 +70,11 @@ exports.createRecord = async (req, res) => {
         type: req.body.type,
         name: req.body.name,
         value: req.body.value,
-        ttl: req.body.ttl || 3600,
-        priority: req.body.priority
+        ttl: req.body.ttl ,
+        priority: req.body.priority,
+        id:req.body.id,
+        createdAt:req.body.createdAt,
+        updatedAt:req.body.updatedAt,
       };
   
       domain.records.push(newRecord);
@@ -94,7 +93,7 @@ exports.createRecord = async (req, res) => {
         return res.status(404).json({ message: 'Domain not found' });
       }
   
-      const recordIndex = domain.records.findIndex(record => record._id.toString() === req.params.recordId);
+      const recordIndex = domain.records.findIndex(record => record.id.toString() === req.params.recordId);
       if (recordIndex === -1) {
         return res.status(404).json({ message: 'Record not found' });
       }
@@ -120,7 +119,7 @@ exports.createRecord = async (req, res) => {
         return res.status(404).json({ message: 'Domain not found' });
       }
   
-      const recordIndex = domain.records.findIndex(record => record._id.toString() === req.params.recordId);
+      const recordIndex = domain.records.findIndex(record => record.id.toString() === req.params.recordId);
       if (recordIndex === -1) {
         return res.status(404).json({ message: 'Record not found' });
       }
